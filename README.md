@@ -56,18 +56,22 @@ operator logins → recipient decrypt → leak simulation → forensic attributi
 
 ## Deploy on Railway (or any container host)
 
-The repo ships a multi-stage `Dockerfile` (builds the React UI, then serves it from the FastAPI backend) — Railway picks it up automatically instead of Railpack guessing.
+The repo ships a multi-stage `Dockerfile` (builds the React UI, then serves it from the FastAPI backend). Railway detects it automatically — do **not** redeploy a failed deployment: those are pinned to the old commit they were built from.
 
-1. **New Project → Deploy from GitHub repo** → pick this repository.
-2. Add a **Volume** mounted at `/data` (the SQLite DB, tokens and sealed blobs live there and must survive redeploys).
-3. Set these service **Variables**:
+1. **New Project → Deploy from GitHub repo** → pick this repository, branch `main`.
+2. If a previous build failed with *"Detected Python · No start command detected"*, it built a pre-Dockerfile snapshot. Use **Deploy → Deploy latest commit** (or Settings → Build → Builder = `Dockerfile`) so the current tree is used.
+3. Add a **Volume** mounted at `/data` — the SQLite DB, tokens and sealed blobs live there and must survive redeploys.
+4. **Networking → Generate Domain** and enter port **`8765`** when asked (the container listens on `$SIH_PORT`, default 8765, on `0.0.0.0`).
+5. Set these service **Variables**, then redeploy once so the public domain lands in the host/origin allow-lists:
 
 ```env
 SIH_DEMO=1                 # demo helpers + leak simulator for judging (omit in production)
-SIH_PUBLIC_URL=https://<your-service>.up.railway.app   # your public domain (adds it to host/origin allow-lists)
+SIH_PUBLIC_URL=https://<your-service>.up.railway.app   # the domain from step 4, no trailing slash
 ```
 
-Railway injects `PORT`-style vars automatically; the container listens on `$SIH_PORT` (default 8765) on `0.0.0.0`. Generate a public domain in the service's Networking tab and point `SIH_PUBLIC_URL` at it. Everything runs offline inside the container: no cloud KMS, no external DB, no public blockchain.
+6. Open the domain → **Load demo environment** (demo mode) or bootstrap with the one-time setup code from the deploy logs (production mode).
+
+Everything runs offline inside the container: no cloud KMS, no external DB, no public blockchain. `GET /api/status` is the health endpoint.
 
 ## Architecture
 
