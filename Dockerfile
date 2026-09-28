@@ -25,12 +25,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/app ./app
 COPY --from=ui /ui/dist /app/frontend/dist
 
-# Data dir (SQLite DB, tokens, blobs) lives on a mounted volume so state
-# survives redeploys. Can be configured with SIH_DATA_DIR.
+# Data dir (SQLite DB, tokens, blobs): mount a Railway volume at /data from the
+# dashboard so state survives redeploys. (VOLUME declarations are not supported
+# by Railway's builder - the mount is configured in the service settings.)
 ENV SIH_DATA_DIR=/data \
     SIH_PORT=8765 \
     PYTHONUNBUFFERED=1
-VOLUME /data
 
 EXPOSE 8765
 CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${SIH_PORT}"]
