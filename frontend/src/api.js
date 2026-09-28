@@ -1,6 +1,7 @@
-// The backend listens on loopback only. When the UI is served by the backend itself
-// (Electron / production build) use same-origin; in `vite dev` talk to port 8765.
-const BASE = window.location.port === "8765" ? "" : "http://127.0.0.1:8765";
+// The backend serves the UI itself in production (Electron and container deploys),
+// so use same-origin there. Only the Vite dev server (5173) must target the local
+// backend on 8765 explicitly. A hardcoded loopback URL would break any hosted deploy.
+const BASE = window.location.port === "5173" ? "http://127.0.0.1:8765" : "";
 const KEY = "sih.session";
 
 let session = null;
