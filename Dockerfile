@@ -4,6 +4,8 @@
 # ---------- stage 1: frontend build ----------
 FROM node:20-alpine AS ui
 WORKDIR /ui
+# The UI build never runs Electron; skip its postinstall binary download
+ENV ELECTRON_SKIP_BINARY_DOWNLOAD=1
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
@@ -13,7 +15,10 @@ RUN npm run build
 FROM python:3.11-slim AS runtime
 WORKDIR /app/backend
 
-# System deps: nothing exotic needed; keep image small
+# System deps: libglib2.0 is required by opencv-python-headless on slim images
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
