@@ -1,0 +1,64 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens (RGB triplets so Tailwind can apply alpha) */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: 245 246 248;
+  --surface: 255 255 255;
+  --inset: 248 249 251;
+  --line: 228 231 236;
+  --line-strong: 208 213 221;
+  --fg: 16 24 40;
+  --muted: 71 84 103;
+  --subtle: 102 112 133;
+  --accent: 36 87 230;
+  --accent-fg: 255 255 255;
+  --ok: 6 118 71;
+  --bad: 196 50 42;
+  --warn: 181 101 12;
+  --info: 30 102 196;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: 10 13 19;
+  --surface: 17 21 29;
+  --inset: 13 17 24;
+  --line: 32 39 52;
+  --line-strong: 46 55 72;
+  --fg: 230 233 239;
+  --muted: 163 171 186;
+  --subtle: 110 119 137;
+  --accent: 96 139 255;
+  --accent-fg: 8 12 20;
+  --ok: 52 199 123;
+  --bad: 248 105 96;
+  --warn: 245 175 70;
+  --info: 99 163 255;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-bg font-sans text-[13.5px] text-fg antialiased; font-feature-settings: "cv11", "ss01", "ss03"; }
+::selection { @apply bg-accent/25; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { @apply rounded-full border-[3px] border-solid border-transparent bg-line-strong bg-clip-padding; }
+
+@layer components {
+  .card { @apply rounded-xl border border-line bg-surface shadow-card; }
+  .card-pad { @apply p-5; }
+  .section-title { @apply text-[13px] font-semibold text-fg; }
+  .eyebrow { @apply text-2xs font-semibold uppercase tracking-[0.08em] text-subtle; }
+  .mono { @apply font-mono text-[12px]; }
+  .input { @apply h-9 w-full rounded-lg border border-line-strong bg-surface px-3 text-[13.5px] text-fg shadow-sm
+           placeholder:text-subtle focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/20
+           disabled:cursor-not-allowed disabled:bg-inset disabled:text-subtle; }
+  .th { @apply whitespace-nowrap border-b border-line bg-inset px-4 py-2.5 text-left text-2xs font-semibold uppercase tracking-[0.06em] text-subtle first:rounded-tl-xl last:rounded-tr-xl; }
+  .td { @apply border-b border-line px-4 py-3 align-middle; }
+  tr:last-child > .td { @apply border-b-0; }
+  .link { @apply font-medium text-accent hover:underline; }
+}
