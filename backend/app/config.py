@@ -47,6 +47,13 @@ if PUBLIC_URL:
         if _p.port:
             ALLOWED_ORIGINS[-1] = f"{_p.scheme}://{_p.hostname}:{_p.port}"
 
+# Railway injects RAILWAY_PUBLIC_DOMAIN automatically once a public domain is attached,
+# so a Railway deploy is allow-listed with zero extra configuration.
+RAILWAY_DOMAIN = os.environ.get("RAILWAY_PUBLIC_DOMAIN", "").strip()
+if RAILWAY_DOMAIN and RAILWAY_DOMAIN not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RAILWAY_DOMAIN)
+    ALLOWED_ORIGINS.append(f"https://{RAILWAY_DOMAIN}")
+
 
 def ensure_dirs() -> None:
     for d in (DATA_DIR, TOKENS_DIR, BLOBS_DIR, REPORTS_DIR, NODES_DIR):
