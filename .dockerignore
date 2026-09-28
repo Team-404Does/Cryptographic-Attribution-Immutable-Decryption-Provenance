@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/data/
+frontend/node_modules/
+frontend/dist/
+.~lock.*#
+*.log
+*.jpg
+.git/

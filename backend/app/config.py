@@ -34,6 +34,19 @@ ALLOWED_HOSTS = [h for h in os.environ.get("SIH_ALLOWED_HOSTS", "127.0.0.1,local
 ALLOWED_ORIGINS = [f"http://{h}:{PORT}" for h in ("127.0.0.1", "localhost")] + (
     ["http://localhost:5173", "http://127.0.0.1:5173"] if DEV_MODE else [])
 
+# Public deployment (e.g. Railway/Render behind a proxy): SIH_PUBLIC_URL is the origin the
+# UI is served from (scheme + host, no trailing slash). When set, that host joins the host
+# allow-list and the URL joins the allowed origins so same-origin POSTs keep working.
+PUBLIC_URL = os.environ.get("SIH_PUBLIC_URL", "").rstrip("/")
+if PUBLIC_URL:
+    from urllib.parse import urlsplit
+    _p = urlsplit(PUBLIC_URL)
+    if _p.hostname:
+        ALLOWED_HOSTS.append(_p.hostname)
+        ALLOWED_ORIGINS.append(f"{_p.scheme}://{_p.hostname}")
+        if _p.port:
+            ALLOWED_ORIGINS[-1] = f"{_p.scheme}://{_p.hostname}:{_p.port}"
+
 
 def ensure_dirs() -> None:
     for d in (DATA_DIR, TOKENS_DIR, BLOBS_DIR, REPORTS_DIR, NODES_DIR):

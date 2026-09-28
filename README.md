@@ -54,6 +54,21 @@ operator logins → recipient decrypt → leak simulation → forensic attributi
 - **Resource limits.** Uploads are capped at 50 MB. PDFs are limited to 100 pages and a maximum rendered page size. Images are limited to 60 MP.
 - **Demo helpers.** Seed, reset, tamper, the leak simulator, retained copies and the robustness lab are disabled unless `SIH_DEMO=1`. Reset and tamper also require a security officer.
 
+## Deploy on Railway (or any container host)
+
+The repo ships a multi-stage `Dockerfile` (builds the React UI, then serves it from the FastAPI backend) — Railway picks it up automatically instead of Railpack guessing.
+
+1. **New Project → Deploy from GitHub repo** → pick this repository.
+2. Add a **Volume** mounted at `/data` (the SQLite DB, tokens and sealed blobs live there and must survive redeploys).
+3. Set these service **Variables**:
+
+```env
+SIH_DEMO=1                 # demo helpers + leak simulator for judging (omit in production)
+SIH_PUBLIC_URL=https://<your-service>.up.railway.app   # your public domain (adds it to host/origin allow-lists)
+```
+
+Railway injects `PORT`-style vars automatically; the container listens on `$SIH_PORT` (default 8765) on `0.0.0.0`. Generate a public domain in the service's Networking tab and point `SIH_PUBLIC_URL` at it. Everything runs offline inside the container: no cloud KMS, no external DB, no public blockchain.
+
 ## Architecture
 
 ```
